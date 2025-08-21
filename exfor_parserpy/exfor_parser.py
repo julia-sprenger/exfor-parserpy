@@ -165,7 +165,7 @@ def output_common_or_data(datadic, ofs=0, what="common"):
     elif what == "data":
         curdic = datadic["DATA"]
         # get a column of the DATA section table
-        # to determine the numbe of rows
+        # to determine the number of rows
         while isinstance(curdic, dict):
             for key, cont in curdic.items():
                 curdic = cont
@@ -252,7 +252,6 @@ def output_subentry(datadic, ofs=0, auxinfo=None):
 
 
 def parse_entry(lines, ofs=0, auxinfo=None, parse_opts=None):
-    datadic = {"subentries": []}
     if read_str_field(lines[ofs], 0) != "ENTRY":
         raise TypeError("not an ENTRY block")
     if auxinfo is None:
