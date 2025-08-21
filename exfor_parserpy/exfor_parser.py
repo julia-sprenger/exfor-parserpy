@@ -197,6 +197,7 @@ def parse_subentry(lines, ofs=0, auxinfo=None, parse_opts=None):
     auxinfo["subentryid"] = read_str_field(lines[ofs], 1).strip()
     datadic["__entryid"] = auxinfo["entryid"]
     datadic["__subentid"] = auxinfo["subentryid"]
+    datadic["__lastmodified"] = read_str_field(lines[ofs], 2, 1).strip()
     ofs += 1
     while ofs < len(lines) and read_str_field(lines[ofs], 0) != "ENDSUBENT":
         curfield = read_str_field(lines[ofs], 0)
@@ -226,6 +227,9 @@ def output_subentry(datadic, ofs=0, auxinfo=None):
     lines = []
     subent_line = write_str_field("", 0, "SUBENT")
     subent_line = write_str_field(subent_line, 1, datadic["__subentid"], align="right")
+    subent_line = write_str_field(
+        subent_line, 2, datadic["__lastmodified"], align="right"
+    )
     lines.append(subent_line)
     ofs += 1
     if "BIB" in datadic:
@@ -256,6 +260,7 @@ def parse_entry(lines, ofs=0, auxinfo=None, parse_opts=None):
     auxinfo["entryid"] = read_str_field(lines[ofs], 1).strip()
     ofs += 1
     datadic = {}
+    datadic["__lastmodified"] = read_str_field(lines[ofs], 2, 1).strip()
     while ofs < len(lines) and read_str_field(lines[ofs], 0) != "ENDENTRY":
         if read_str_field(lines[ofs], 0) == "SUBENT":
             subentid = read_str_field(lines[ofs], 1).strip()
@@ -278,12 +283,16 @@ def output_entry(datadic, ofs=0, auxinfo=None):
     first_subentid = search_for_field(datadic, "__subentid")
     if not first_subentid:
         raise IndexError("No subentry identification number found")
+    last_modified = search_for_field(datadic, "__lastmodified")
     entryid = first_subentid[:5]
     entry_line = write_str_field("", 0, "ENTRY")
     entry_line = write_str_field(entry_line, 1, entryid, align="right")
+    entry_line = write_str_field(entry_line, 2, last_modified, align="right")
     lines.append(entry_line)
     ofs += 1
     for cursubent, curdic in datadic.items():
+        if not isinstance(curdic, dict):
+            continue
         curlines, ofs = output_subentry(curdic, ofs)
         lines.extend(curlines)
     lines.append(write_str_field("", 0, "ENDENTRY"))
