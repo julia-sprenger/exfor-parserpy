@@ -257,9 +257,9 @@ def parse_entry(lines, ofs=0, auxinfo=None, parse_opts=None):
     if auxinfo is None:
         auxinfo = {}
     auxinfo["entryid"] = read_str_field(lines[ofs], 1).strip()
-    ofs += 1
     datadic = {}
     datadic["__lastmodified"] = read_str_field(lines[ofs], 2, 1).strip()
+    ofs += 1
     while ofs < len(lines) and read_str_field(lines[ofs], 0) != "ENDENTRY":
         if read_str_field(lines[ofs], 0) == "SUBENT":
             subentid = read_str_field(lines[ofs], 1).strip()
