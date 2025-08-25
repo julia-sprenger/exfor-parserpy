@@ -282,7 +282,8 @@ def output_entry(datadic, ofs=0, auxinfo=None):
     first_subentid = search_for_field(datadic, "__subentid")
     if not first_subentid:
         raise IndexError("No subentry identification number found")
-    last_modified = search_for_field(datadic, "__lastmodified")
+    if not (last_modified := datadic.get("__lastmodified", None)):
+        raise KeyError("No last modification value found")
     entryid = first_subentid[:5]
     entry_line = write_str_field("", 0, "ENTRY")
     entry_line = write_str_field(entry_line, 1, entryid, align="right")
